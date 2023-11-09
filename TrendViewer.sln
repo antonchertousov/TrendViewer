@@ -1,0 +1,22 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TrendViewer", "TrendViewer.csproj", "{4DDCB625-9599-4D7A-A0F2-5A5329190947}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TrendViewer.Tests", "TrendViewer.Tests\TrendViewer.Tests.csproj", "{21F652FD-83EA-436F-86BF-8F5B31B3A226}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{4DDCB625-9599-4D7A-A0F2-5A5329190947}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4DDCB625-9599-4D7A-A0F2-5A5329190947}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4DDCB625-9599-4D7A-A0F2-5A5329190947}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4DDCB625-9599-4D7A-A0F2-5A5329190947}.Release|Any CPU.Build.0 = Release|Any CPU
+		{21F652FD-83EA-436F-86BF-8F5B31B3A226}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{21F652FD-83EA-436F-86BF-8F5B31B3A226}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{21F652FD-83EA-436F-86BF-8F5B31B3A226}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{21F652FD-83EA-436F-86BF-8F5B31B3A226}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal

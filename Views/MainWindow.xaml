@@ -1,0 +1,179 @@
+﻿<Window x:Class="TrendViewer.Views.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:oxy="clr-namespace:OxyPlot.Wpf;assembly=OxyPlot.Wpf"
+        xmlns:converters="clr-namespace:TrendViewer.Converters"
+        mc:Ignorable="d"
+        Title="TrendViewer application"
+        MinHeight="600" 
+        MinWidth="1100">
+    <Window.Resources>
+        <DataTemplate x:Key="statisticsPanelTemplate">
+            <StackPanel
+                HorizontalAlignment="Left"
+                DockPanel.Dock="Top"
+                Margin="10,40,0,0">
+
+                <StackPanel Orientation="Horizontal">
+                    <Label>Max variation:</Label>
+                    <TextBlock 
+                        Text="{Binding MaxVariation, StringFormat=F3, UpdateSourceTrigger=PropertyChanged}"
+                        VerticalAlignment="Center"/>
+                </StackPanel>
+                <StackPanel Orientation="Horizontal">
+                    <Label>Trend:</Label>
+                    <TextBlock
+                        Text="{Binding Trend, 
+                            Converter={converters:TrendToStringConverter},
+                            UpdateSourceTrigger=PropertyChanged}"
+                        VerticalAlignment="Center"/>
+                </StackPanel>
+            </StackPanel>
+        </DataTemplate>
+
+        <DataTemplate x:Key="outlierPanelTemplate">
+            <DockPanel
+                LastChildFill="True">
+                <TextBlock 
+                    Text="Outlier values"
+                    Margin="0,15,0,0"
+                    FontSize="14"
+                    FontWeight="SemiBold"
+                    TextAlignment="Center"
+                    DockPanel.Dock="Top"
+                    Visibility="{Binding Path=.Count,
+                        Converter={converters:IntToVisibilityConverter TrueValue=Visible,
+                                                                       FalseValue=Collapsed}}"/>
+                <TextBlock
+                    Text="No outliers for the axis"
+                    Margin="0,15,0,0"
+                    FontSize="14"
+                    FontWeight="SemiBold"
+                    TextAlignment="Center"
+                    Visibility="{Binding Path=.Count,
+                       Converter={converters:IntToVisibilityConverter TrueValue=Collapsed,
+                                                                       FalseValue=Visible}}"/>
+                <DataGrid 
+                    ItemsSource="{Binding Path=.}"
+                    Margin="0,10,0,20"
+                    AutoGenerateColumns="False"
+                    RowHeaderWidth="0"
+                    HorizontalAlignment="Stretch"
+                    VerticalAlignment="Stretch"
+                    VerticalScrollBarVisibility="Auto"
+                    Visibility="{Binding Path=.Count,
+                               Converter={converters:IntToVisibilityConverter TrueValue=Visible,
+                                                                               FalseValue=Collapsed}}">
+                    <DataGrid.Columns>
+                        <DataGridTextColumn Header="Id" Binding="{Binding Id}" />
+                        <DataGridTextColumn Width="*" Header="Value" Binding="{Binding Value, StringFormat=F4}" />
+                    </DataGrid.Columns>
+                </DataGrid>
+            </DockPanel>
+        </DataTemplate>
+    </Window.Resources>
+    
+    <!-- Initial screen -->
+    <DockPanel Name="MainPanel" Margin="10">
+        <StackPanel 
+            Orientation="Horizontal"
+            HorizontalAlignment="Left"
+            DockPanel.Dock="Top"
+            Margin="10,0,0,10">
+                <TextBlock >Data file path</TextBlock>
+                <TextBox
+                    Text="{Binding FilePath, UpdateSourceTrigger=PropertyChanged}"
+                    IsReadOnly="True"
+                    MinWidth="300"
+                    Margin="10,0,0,10"/>
+                <Button 
+                    Command="{Binding OpenFileCommand}"
+                    Margin="10,0,0,10"> Open file </Button>
+                <TextBlock 
+                    Text="Take first number of elements:"
+                    Margin="100,0,0,10"
+                    Visibility="{Binding IsDataLoaded,
+                                   Converter={converters:BoolToVisibilityConverter TrueValue=Visible,
+                                                                                   FalseValue=Collapsed}}"/>
+                <TextBox 
+                    Text="{Binding NumberOfValues, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                    MinWidth="30" Margin="10,0,0,10"
+                    Visibility="{Binding IsDataLoaded,
+                                   Converter={converters:BoolToVisibilityConverter TrueValue=Visible,
+                                                                                   FalseValue=Collapsed}}"/>
+                <Button 
+                    Command="{Binding RecalculateCommand}"
+                    Visibility="{Binding IsDataLoaded,
+                                   Converter={converters:BoolToVisibilityConverter TrueValue=Visible,
+                                                                                   FalseValue=Collapsed}}"
+                    Margin="10,0,0,10"> Recalculate </Button>
+        </StackPanel>
+        <StackPanel
+            Visibility="{Binding IsDataLoaded,
+                               Converter={converters:BoolToVisibilityConverter TrueValue=Collapsed,
+                                                                               FalseValue=Visible}}">
+            <TextBlock 
+                HorizontalAlignment="Center"
+                DockPanel.Dock="Top"
+                Margin="10, 0, 0, 0"
+                FontSize="16"
+                FontWeight="Bold"
+                Text="Please select TrendViewer data file"/>
+        </StackPanel>
+
+        <!-- Content data -->
+        <ItemsControl
+            Visibility="{Binding IsDataLoaded,
+                               Converter={converters:BoolToVisibilityConverter TrueValue=Visible,
+                                                                               FalseValue=Collapsed}}"
+            ItemsSource="{Binding AxisDataSets}">
+            <ItemsControl.ItemsPanel>
+                <ItemsPanelTemplate>
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition />
+                            <RowDefinition />
+                            <RowDefinition />
+                        </Grid.RowDefinitions>
+                    </Grid>
+                </ItemsPanelTemplate>
+            </ItemsControl.ItemsPanel>
+            <ItemsControl.ItemTemplate>
+                <DataTemplate>
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="5*" />
+                            <ColumnDefinition Width="1*" />
+                            <ColumnDefinition Width="1*" />
+                        </Grid.ColumnDefinitions>
+                    <!-- Graph -->
+                        <oxy:PlotView
+                            Grid.Column="0"
+                            Model="{Binding Converter={converters:DataToPlotModelConverter}}"/>
+
+                    <!-- Outliers -->
+                        <ContentControl
+                            Grid.Column="1"
+                            Content="{Binding OutlierValues}"
+                            ContentTemplate="{StaticResource outlierPanelTemplate}" />
+
+                    <!-- Statistics -->
+                        <ContentControl
+                            Grid.Column="2"
+                            Content="{Binding Path=.}"
+                            ContentTemplate="{StaticResource statisticsPanelTemplate}" />
+                    </Grid>
+                </DataTemplate>
+            </ItemsControl.ItemTemplate>
+            <ItemsControl.ItemContainerStyle>
+                <Style>
+                    <Style.Setters>
+                        <Setter Property="Grid.Row" Value="{Binding AxisId}" />
+                    </Style.Setters>
+                </Style>
+            </ItemsControl.ItemContainerStyle>
+        </ItemsControl>
+    </DockPanel>
+</Window>
